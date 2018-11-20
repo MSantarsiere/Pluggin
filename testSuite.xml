@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestSuite>
+
+<TestCase>
+    <Class>ExampleTest</Class>
+    <method>test1</method>
+</TestCase>
+
+<TestCase>
+    <Class>ExampleTest</Class>
+    <method>test2</method>
+</TestCase>
+
+</TestSuite>
