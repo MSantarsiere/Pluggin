@@ -6,11 +6,8 @@
 package it.unisa.plug.dado;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
@@ -20,7 +17,12 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
@@ -39,13 +41,14 @@ public class MyMojo extends AbstractMojo {
      */
     private String msg;
 
+    @Override
     public void execute()
             throws MojoExecutionException {
 
         try {
             getLog().info("Hello " + msg);
             openFile(msg);
-        } catch (IOException ex) {
+        } catch (IOException | ParserConfigurationException | SAXException ex) {
             Logger.getLogger(MyMojo.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -58,26 +61,43 @@ public class MyMojo extends AbstractMojo {
         this.msg = msg;
     }
 
-    private void openFile(String msg) throws IOException {
-
-        File file = new File("C:\\Users\\Rembor\\Documents\\NetBeansProjects\\dado\\testSuite.xml");
-        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
-                .newInstance();
-        DocumentBuilder documentBuilder;
+    private void openFile(String msg) throws IOException, ParserConfigurationException, SAXException {
         try {
+            File file = new File("C:\\Users\\Rembor\\Documents\\NetBeansProjects\\dado\\testSuite.xml");
+            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
+                    .newInstance();
+            DocumentBuilder documentBuilder;
+
             documentBuilder = documentBuilderFactory.newDocumentBuilder();
             Document document = documentBuilder.parse(file);
-            String usr = document.getElementsByTagName("Class").item(0).getTextContent();
-            String pwd = document.getElementsByTagName("method").item(0).getTextContent();
-            getLog().info("Hello " + usr);
-            getLog().info("Hello " + pwd);
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.parse(file);
+            doc.getDocumentElement().normalize();
+            NodeList nList = doc.getElementsByTagName("TestCase");
 
-            /*
-             Serve per evitare il bug dovuto al fatto che il plugin non riconosce se sia mvn.bat o 
-              mvn.cmd funziona solo per windows
-             */
-            String mvn = getMvnCommand();
-            Process process = Runtime.getRuntime().exec(mvn + " clean verify -f C:\\Users\\Rembor\\Documents\\NetBeansProjects\\progetto\\pom.xml -Dtest=" + usr + "#" + pwd);
+            for (int temp = 0; temp < nList.getLength(); temp++) {
+                Node nNode = nList.item(temp);
+                System.out.println("\nCurrent Element :" + nNode.getNodeName());
+
+                if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+                    Element eElement = (Element) nNode;
+
+                    String classe = eElement.getElementsByTagName("Class").item(0).getTextContent();
+
+                    String method = eElement.getElementsByTagName("method").item(0).getTextContent();
+                    /*
+                     Serve per evitare il bug dovuto al fatto che il plugin non riconosce se sia mvn.bat o 
+                     mvn.cmd funziona solo per windows
+                     */
+                    String mvn = getMvnCommand();
+                    Runtime.getRuntime().exec(mvn + " clean verify -f " + msg + "\\pom.xml -Dtest=" + classe + "#" + method);
+                    getLog().info("Hello  lanciaato il comando" + mvn + " clean verify -f " + msg + "\\pom.xml -Dtest=" + classe + "#" + method);
+                    readJacoco(msg);
+
+                }
+            }
+
         } catch (ParserConfigurationException | SAXException ex) {
             Logger.getLogger(MyMojo.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -103,6 +123,106 @@ public class MyMojo extends AbstractMojo {
             }
         }
         return null;
+    }
+
+    private void readJacoco(String msg) {
+        try {
+            WriteCvs stampamatrice = new WriteCvs();
+            File fXmlFile = new File(msg + "\\target\\site\\jacoco\\jacoco.xml");
+
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setValidating(false);
+
+            dbf.setNamespaceAware(true);
+            dbf.setFeature("http://xml.org/sax/features/namespaces", false);
+            dbf.setFeature("http://xml.org/sax/features/validation", false);
+            dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
+            dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+
+            DocumentBuilder db = dbf.newDocumentBuilder();
+
+            Document doc = db.parse(fXmlFile);
+
+            NodeList nList3 = doc.getElementsByTagName("sourcefile");
+
+            System.out.println("----------------------------");
+
+            for (int temp = 0; temp < nList3.getLength(); temp++) {
+
+                Node nNode3 = nList3.item(temp);
+
+                if (nNode3.hasAttributes()) {
+
+                    // get attributes names and values
+                    NamedNodeMap nodeMap3 = nNode3.getAttributes();
+
+                    for (int i = 0; i < nodeMap3.getLength(); i++) {
+
+                        Node node = nodeMap3.item(i);
+
+                        getLog().info("attr name : " + node.getNodeName());
+                        getLog().info(" attr value : " + node.getNodeValue());
+                    }
+
+                }
+
+                System.out.println("----------------------------");
+                if (nNode3.getNodeType() == Node.ELEMENT_NODE) {
+
+                    Element eElement3 = (Element) nNode3;
+                    NodeList list3 = eElement3.getElementsByTagName("line");
+
+                    int lista = list3.getLength();
+                    System.out.println(list3.getLength());
+
+                    ArrayList<Integer> stringa = new ArrayList<>();
+
+                    int j = 0;
+                    int b = 0;
+                    for (int count = 0; count < list3.getLength(); count++) {
+
+                        Node tempNode = list3.item(count);
+
+                        // make sure it's element node.
+                        if (tempNode.getNodeType() == Node.ELEMENT_NODE) {
+
+                            if (tempNode.hasAttributes()) {
+
+                                // get attributes names and values
+                                NamedNodeMap nodeMap4 = tempNode.getAttributes();
+
+                                for (int i = 0; i < nodeMap4.getLength(); i++) {
+                                    Node node = nodeMap4.item(i);
+                                    String tes = "ci";
+                                    if (tes.equals(node.getNodeName())) {
+
+                                        System.out.println("attr name : " + node.getNodeName() + "  attr value : " + node.getNodeValue());
+
+                                        if (Integer.parseInt(node.getNodeValue()) != 0) {
+
+                                            stringa.add(1);
+                                        } else {
+                                            stringa.add(0);
+
+                                        }
+
+                                    }
+
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                    stampamatrice.writeDataAtOnce(stringa);
+
+                }
+            }
+        } catch (ParserConfigurationException | SAXException | IOException | DOMException | NumberFormatException e) {
+        }
+
     }
 
 }

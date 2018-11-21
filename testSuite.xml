@@ -11,4 +11,12 @@
     <method>test2</method>
 </TestCase>
 
+
+
+
+<TestCase>
+    <Class>ExampleTest1</Class>
+    <method>test3</method>
+</TestCase>
+
 </TestSuite>
