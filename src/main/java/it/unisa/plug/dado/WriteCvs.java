@@ -12,6 +12,7 @@ package it.unisa.plug.dado;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -31,8 +32,11 @@ public class WriteCvs {
     
     static private File file = new File("matrice.csv");
 
+    
     public static void writeDataAtOnce(ArrayList<Integer> linea) {
 
+        
+        
         try {
             FileWriter fw = new FileWriter(file, true);
             BufferedWriter bw = new BufferedWriter(fw);

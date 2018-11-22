@@ -27,14 +27,14 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
 /**
  *
  * @author Rembor
  */
-@Mojo(name = "hello")
-public class MyMojo extends AbstractMojo {
-
-    @Parameter(property = "msg")
+@Mojo(name = "hello1")
+public class MyMojoStatementC extends AbstractMojo {
+      @Parameter(property = "msg")
 
     /**
      * My File.
@@ -43,7 +43,7 @@ public class MyMojo extends AbstractMojo {
      */
     private String msg;
 
-    @Override
+    
     public void execute()
             throws MojoExecutionException {
 
@@ -80,7 +80,7 @@ public class MyMojo extends AbstractMojo {
             DocumentBuilder documentBuilder;
 
             documentBuilder = documentBuilderFactory.newDocumentBuilder();
-            Document document = documentBuilder.parse(file);
+            documentBuilder.parse(file);
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(file);
@@ -146,6 +146,7 @@ public class MyMojo extends AbstractMojo {
 
     private void readJacoco(String msg) {
         try {
+            WriteCvs stampamatrice = new WriteCvs();
             File fXmlFile = new File(msg + "\\target\\site\\jacoco\\jacoco.xml");
 
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -159,43 +160,15 @@ public class MyMojo extends AbstractMojo {
 
             DocumentBuilder db = dbf.newDocumentBuilder();
 
-            Document doc = db.parse(fXmlFile);
+            Document doc = db.parse(fXmlFile);          
+                    NodeList list3 = doc.getElementsByTagName("line");
 
-            NodeList nList3 = doc.getElementsByTagName("sourcefile");
-
-            System.out.println("----------------------------");
-
-            for (int temp = 0; temp < nList3.getLength(); temp++) {
-
-                Node nNode3 = nList3.item(temp);
-
-                if (nNode3.hasAttributes()) {
-
-                    // get attributes names and values
-                    NamedNodeMap nodeMap3 = nNode3.getAttributes();
-
-                    for (int i = 0; i < nodeMap3.getLength(); i++) {
-
-                        Node node = nodeMap3.item(i);
-
-                        getLog().info("attr name : " + node.getNodeName());
-                        getLog().info(" attr value : " + node.getNodeValue());
-                    }
-
-                }
-
-                System.out.println("----------------------------");
-                if (nNode3.getNodeType() == Node.ELEMENT_NODE) {
-
-                    Element eElement3 = (Element) nNode3;
-                    NodeList list3 = eElement3.getElementsByTagName("line");
-
-                    System.out.println(list3.getLength());
+                  //  System.out.println(list3.getLength());
 
                     ArrayList<Integer> stringa = new ArrayList<>();
 
                     for (int count = 0; count < list3.getLength(); count++) {
-                        System.out.println(list3.item(count).getAttributes().getNamedItem("ci").getNodeValue());
+                       // System.out.println(list3.item(count).getAttributes().getNamedItem("ci").getNodeValue());
 
                         Node tempNode = list3.item(count);
 
@@ -210,11 +183,9 @@ public class MyMojo extends AbstractMojo {
                                 for (int i = 0; i < nodeMap4.getLength(); i++) {
                                     Node node = nodeMap4.item(i);
                                     String tes = "ci";
-                                    //System.out.println("attr name : " + node.getNodeName() + "  attr value : " + node.getNodeValue());
 
                                     if (tes.equals(node.getNodeName())) {
                                         Node node1 = node;
-                                        // System.out.println("attr name : " + node1.getNodeName() + "  attr value : " + node1.getNodeValue());
 
                                         if (Integer.parseInt(node1.getNodeValue()) != 0) {
 
@@ -236,11 +207,11 @@ public class MyMojo extends AbstractMojo {
 
                     WriteCvs.writeDataAtOnce(stringa);
 
-                }
-            }
+                
+            
         } catch (ParserConfigurationException | SAXException | IOException | DOMException | NumberFormatException e) {
         }
 
     }
-
+    
 }
