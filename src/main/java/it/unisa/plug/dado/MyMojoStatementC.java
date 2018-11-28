@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -49,6 +50,8 @@ public class MyMojoStatementC extends AbstractMojo {
 
         try {
             getLog().info("Hello " + msg);
+            
+                    
             openFile(msg);
         } catch (IOException | ParserConfigurationException | SAXException ex) {
             Logger.getLogger(MyMojo.class.getName()).log(Level.SEVERE, null, ex);
@@ -68,13 +71,15 @@ public class MyMojoStatementC extends AbstractMojo {
             /*
             serve per pulire il file se già esiste
             */
+            
             File file1 = new File("matrice.csv");
             if (file1.exists()) {
                 PrintWriter writer = new PrintWriter(file1);
                 writer.print("");
                 writer.close();
             }
-            File file = new File("C:\\Users\\Rembor\\Documents\\NetBeansProjects\\dado\\testSuite.xml");
+            File file = new File("testSuite.xml");
+            ListClassesExample.listClasses(msg);
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
                     .newInstance();
             DocumentBuilder documentBuilder;
@@ -86,7 +91,9 @@ public class MyMojoStatementC extends AbstractMojo {
             Document doc = dBuilder.parse(file);
             doc.getDocumentElement().normalize();
             NodeList nList = doc.getElementsByTagName("TestCase");
-
+                String mvn = getMvnCommand();
+                 
+            
             for (int temp = 0; temp < nList.getLength(); temp++) {
                 Node nNode = nList.item(temp);
                 System.out.println("\nCurrent Element :" + nNode.getNodeName());
@@ -100,15 +107,16 @@ public class MyMojoStatementC extends AbstractMojo {
                     /*
                      Serve per evitare il bug dovuto al fatto che il plugin non riconosce se sia mvn.bat o 
                      mvn.cmd funziona solo per windows
-                     */
-                    String mvn = getMvnCommand();
+                     */                    
+                   
                     Process tr = Runtime.getRuntime().exec(mvn + " clean verify -f " + msg + "\\pom.xml -Dtest=" + classe + "#" + method);
                     getLog().info("Hello  lanciaato il comando" + mvn + " clean verify -f " + msg + "\\pom.xml -Dtest=" + classe + "#" + method);
        //se non hai l'ssd metto in attesa il processo altrimenti non si ha il tempo di creare il jacoco.xml         
                     BufferedReader stdOut = new BufferedReader(new InputStreamReader(tr.getInputStream()));
                     String s;
                     while ((s = stdOut.readLine()) != null) {
-      //tempo morto
+      //aspettando che la build finisca
+                        System.out.println(s);
                     }
 
                     readJacoco(msg);
@@ -119,7 +127,9 @@ public class MyMojoStatementC extends AbstractMojo {
 
         } catch (ParserConfigurationException | SAXException ex) {
             Logger.getLogger(MyMojo.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        } catch (TransformerException ex) {
+              Logger.getLogger(MyMojoStatementC.class.getName()).log(Level.SEVERE, null, ex);
+          }
 
     }
 
@@ -208,7 +218,7 @@ public class MyMojoStatementC extends AbstractMojo {
                     WriteCvs.writeDataAtOnce(stringa);
 
                 
-            
+         fXmlFile.delete();
         } catch (ParserConfigurationException | SAXException | IOException | DOMException | NumberFormatException e) {
         }
 
