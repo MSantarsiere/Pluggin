@@ -44,14 +44,12 @@ public class MyMojoBranchC extends AbstractMojo {
      */
     private String msg;
 
-    
     public void execute()
             throws MojoExecutionException {
 
         try {
             getLog().info("Hello " + msg);
-            
-                    
+
             openFile(msg);
         } catch (IOException | ParserConfigurationException | SAXException ex) {
             Logger.getLogger(MyMojo.class.getName()).log(Level.SEVERE, null, ex);
@@ -69,9 +67,9 @@ public class MyMojoBranchC extends AbstractMojo {
     private void openFile(String msg) throws IOException, ParserConfigurationException, SAXException {
         try {
             /*
-            serve per pulire il file se già esiste
-            */
-            
+             serve per pulire il file se già esiste
+             */
+
             File file1 = new File("matrice.csv");
             if (file1.exists()) {
                 PrintWriter writer = new PrintWriter(file1);
@@ -91,9 +89,8 @@ public class MyMojoBranchC extends AbstractMojo {
             Document doc = dBuilder.parse(file);
             doc.getDocumentElement().normalize();
             NodeList nList = doc.getElementsByTagName("TestCase");
-                String mvn = getMvnCommand();
-                 
-            
+            String mvn = getMvnCommand();
+
             for (int temp = 0; temp < nList.getLength(); temp++) {
                 Node nNode = nList.item(temp);
                 System.out.println("\nCurrent Element :" + nNode.getNodeName());
@@ -107,15 +104,15 @@ public class MyMojoBranchC extends AbstractMojo {
                     /*
                      Serve per evitare il bug dovuto al fatto che il plugin non riconosce se sia mvn.bat o 
                      mvn.cmd funziona solo per windows
-                     */                    
-                   
+                     */
+
                     Process tr = Runtime.getRuntime().exec(mvn + " clean verify -f " + msg + "\\pom.xml -Dtest=" + classe + "#" + method);
                     getLog().info("Hello  lanciaato il comando" + mvn + " clean verify -f " + msg + "\\pom.xml -Dtest=" + classe + "#" + method);
-       //se non hai l'ssd metto in attesa il processo altrimenti non si ha il tempo di creare il jacoco.xml         
+                    //se non hai l'ssd metto in attesa il processo altrimenti non si ha il tempo di creare il jacoco.xml         
                     BufferedReader stdOut = new BufferedReader(new InputStreamReader(tr.getInputStream()));
                     String s;
                     while ((s = stdOut.readLine()) != null) {
-      //aspettando che la build finisca
+                        //aspettando che la build finisca
                         System.out.println(s);
                     }
 
@@ -128,8 +125,8 @@ public class MyMojoBranchC extends AbstractMojo {
         } catch (ParserConfigurationException | SAXException ex) {
             Logger.getLogger(MyMojo.class.getName()).log(Level.SEVERE, null, ex);
         } catch (TransformerException ex) {
-              Logger.getLogger(MyMojoStatementC.class.getName()).log(Level.SEVERE, null, ex);
-          }
+            Logger.getLogger(MyMojoStatementC.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
     }
 
@@ -170,42 +167,37 @@ public class MyMojoBranchC extends AbstractMojo {
 
             DocumentBuilder db = dbf.newDocumentBuilder();
 
-            Document doc = db.parse(fXmlFile);          
-                    NodeList list3 = doc.getElementsByTagName("line");
+            Document doc = db.parse(fXmlFile);
+            NodeList list3 = doc.getElementsByTagName("line");
 
                   //  System.out.println(list3.getLength());
+            ArrayList<Integer> stringa = new ArrayList<>();
 
-                    ArrayList<Integer> stringa = new ArrayList<>();
+            for (int count = 0; count < list3.getLength(); count++) {
+                // System.out.println(list3.item(count).getAttributes().getNamedItem("ci").getNodeValue());
 
-                    for (int count = 0; count < list3.getLength(); count++) {
-                       // System.out.println(list3.item(count).getAttributes().getNamedItem("ci").getNodeValue());
+                Node tempNode = list3.item(count);
 
-                        Node tempNode = list3.item(count);
+                // make sure it's element node.
+                if (tempNode.getNodeType() == Node.ELEMENT_NODE) {
 
-                        // make sure it's element node.
-                        if (tempNode.getNodeType() == Node.ELEMENT_NODE) {
+                    if (tempNode.hasAttributes()) {
 
-                            if (tempNode.hasAttributes()) {
+                        // get attributes names and values
+                        NamedNodeMap nodeMap4 = tempNode.getAttributes();
 
-                                // get attributes names and values
-                                NamedNodeMap nodeMap4 = tempNode.getAttributes();
+                        for (int i = 0; i < nodeMap4.getLength(); i++) {
+                            Node node = nodeMap4.item(i);
+                            String tes = "cb";
 
-                                for (int i = 0; i < nodeMap4.getLength(); i++) {
-                                    Node node = nodeMap4.item(i);
-                                    String tes = "cb";
+                            if (tes.equals(node.getNodeName())) {
+                                Node node1 = node;
 
-                                    if (tes.equals(node.getNodeName())) {
-                                        Node node1 = node;
+                                if (Integer.parseInt(node1.getNodeValue()) != 0) {
 
-                                        if (Integer.parseInt(node1.getNodeValue()) != 0) {
-
-                                            stringa.add(1);
-                                        } else {
-                                            stringa.add(0);
-
-                                        }
-
-                                    }
+                                    stringa.add(1);
+                                } else {
+                                    stringa.add(0);
 
                                 }
 
@@ -215,13 +207,16 @@ public class MyMojoBranchC extends AbstractMojo {
 
                     }
 
-                    WriteCvs.writeDataAtOnce(stringa);
+                }
 
-                
-         fXmlFile.delete();
+            }
+
+            WriteCvs.writeDataAtOnce(stringa);
+
+            fXmlFile.delete();
         } catch (ParserConfigurationException | SAXException | IOException | DOMException | NumberFormatException e) {
         }
 
     }
-    
+
 }

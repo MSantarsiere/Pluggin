@@ -30,62 +30,50 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
  
 public class ListClassesExample {
- 
+
     public static void listClasses(String msg) throws ParserConfigurationException, TransformerConfigurationException, TransformerException {
-  File projectDir=new File(msg+"\\src\\test\\java\\it\\unisa\\test");
-         int fileCount=projectDir.list().length;
-              System.out.println("File Count:"+fileCount);
-              
-          DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+        File projectDir = new File(msg + "\\src\\test\\java");
+        int fileCount = projectDir.list().length;
+        System.out.println("File Count:" + fileCount);
 
-            // root elements
-            Document doc = docBuilder.newDocument();
-            Element rootElement = doc.createElement("TestSuite");
-            doc.appendChild(rootElement);
+        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 
-        
-        
+        // root elements
+        Document doc = docBuilder.newDocument();
+        Element rootElement = doc.createElement("TestSuite");
+        doc.appendChild(rootElement);
+
         new DirExplorer((level, path, file) -> path.endsWith(".java"), new DirExplorer.FileHandler() {
 
             public void handle(int level, String path, File file) {
                 System.out.println(path);
-                
+
                 try {
-                    
-                    
-                 
-                    
+
                     new VoidVisitorAdapter<Object>() {
                         @Override
                         public void visit(ClassOrInterfaceDeclaration n, Object arg) {
                             super.visit(n, arg);
-                            
-                
-               
-                
-                 
-                            
-                            
+
                             List<String> methodNames = new ArrayList<>();
                             VoidVisitor<List<String>> methodNameCollector = new VoidVisitorComplete.MethodNameCollector();
                             methodNameCollector.visit(n, methodNames);
-                          for(String a :methodNames){
-                Element caso = doc.createElement("TestCase");
-                rootElement.appendChild(caso);
-              
-                //  elements
-                Element classe = doc.createElement("Class");
-            //   String nome=getnome();
-                System.out.println(" * " + n.getNameAsString());
-                classe.appendChild(doc.createTextNode(n.getNameAsString()));
-                caso.appendChild(classe);
+                            for (String a : methodNames) {
+                                Element caso = doc.createElement("TestCase");
+                                rootElement.appendChild(caso);
 
-                              
-                            Element metodo = doc.createElement("method");
-                    metodo.appendChild(doc.createTextNode(a));
-                    caso.appendChild(metodo);
-                        }
+                                //  elements
+                                Element classe = doc.createElement("Class");
+                                //   String nome=getnome();
+                                System.out.println(" * " + n.getNameAsString());
+                                classe.appendChild(doc.createTextNode(n.getNameAsString()));
+                                caso.appendChild(classe);
+
+                                Element metodo = doc.createElement("method");
+                                metodo.appendChild(doc.createTextNode(a));
+                                caso.appendChild(metodo);
+                            }
                         }
                     }.visit(JavaParser.parse(file), null);
                     System.out.println(); // empty line
@@ -94,33 +82,27 @@ public class ListClassesExample {
                 }
             }
         }).explore(projectDir);
-    
-    // write the content into xml file
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
-            DOMSource source = new DOMSource(doc);
-            StreamResult result = new StreamResult(new File("testSuite.xml"));
+
+        // write the content into xml file
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        Transformer transformer = transformerFactory.newTransformer();
+        DOMSource source = new DOMSource(doc);
+        StreamResult result = new StreamResult(new File("testSuite.xml"));
 
 		// Output to console for testing
-            // StreamResult result = new StreamResult(System.out);
-            transformer.transform(source, result);
+        // StreamResult result = new StreamResult(System.out);
+        transformer.transform(source, result);
 
-            System.out.println("File saved!");
+        System.out.println("File saved!");
 
-       
     }
 
-
-    
-    
     /*
  
-    public static void main(String[] args) throws ParserConfigurationException, TransformerException {
-        File projectDir = new File("C:\\Users\\Rembor\\Documents\\NetBeansProjects\\progetto\\src\\test\\java\\it\\unisa\\test");
-        listClasses(projectDir);
+     public static void main(String[] args) throws ParserConfigurationException, TransformerException {
+     File projectDir = new File("C:\\Users\\Rembor\\Documents\\NetBeansProjects\\progetto\\src\\test\\java\\it\\unisa\\test");
+     listClasses(projectDir);
         
-    }
-      */
-
-    
+     }
+     */
 }

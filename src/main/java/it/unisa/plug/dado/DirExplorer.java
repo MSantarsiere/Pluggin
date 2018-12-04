@@ -11,28 +11,30 @@ import java.io.File;
  *
  * @author Rembor
  */
-
 public class DirExplorer {
+
     public interface FileHandler {
+
         void handle(int level, String path, File file);
     }
- 
+
     public interface Filter {
+
         boolean interested(int level, String path, File file);
     }
- 
+
     private FileHandler fileHandler;
     private Filter filter;
- 
+
     public DirExplorer(Filter filter, FileHandler fileHandler) {
         this.filter = filter;
         this.fileHandler = fileHandler;
     }
- 
+
     public void explore(File root) {
         explore(0, "", root);
     }
- 
+
     private void explore(int level, String path, File file) {
         if (file.isDirectory()) {
             for (File child : file.listFiles()) {
@@ -44,5 +46,5 @@ public class DirExplorer {
             }
         }
     }
- 
+
 }

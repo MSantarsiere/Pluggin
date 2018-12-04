@@ -5,7 +5,6 @@
  */
 package it.unisa.plug.dado;
 
-
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.MethodDeclaration;
@@ -18,15 +17,12 @@ import java.util.List;
 
 public class VoidVisitorComplete {
 
-
-
-
-   static class MethodNamePrinter extends VoidVisitorAdapter<Void> {
+    static class MethodNamePrinter extends VoidVisitorAdapter<Void> {
 
         @Override
         public void visit(MethodDeclaration md, Void arg) {
             super.visit(md, arg);
-            
+
             System.out.println("Method Name Printed: " + md.getName());
         }
     }
@@ -37,7 +33,7 @@ public class VoidVisitorComplete {
         public void visit(MethodDeclaration md, List<String> collector) {
             super.visit(md, collector);
             collector.add(md.getName().toString());
-        
+
         }
     }
 

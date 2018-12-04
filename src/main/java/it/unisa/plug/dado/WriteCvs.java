@@ -9,7 +9,6 @@ package it.unisa.plug.dado;
  *
  * @author Rembor
  */
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -26,17 +25,11 @@ import java.util.logging.Logger;
  */
 public class WriteCvs {
 
-   
-
     // stampa il csv nella base directory del progetto
-    
     static private File file = new File("matrice.csv");
 
-    
     public static void writeDataAtOnce(ArrayList<Integer> linea) {
 
-        
-        
         try {
             FileWriter fw = new FileWriter(file, true);
             BufferedWriter bw = new BufferedWriter(fw);
@@ -54,7 +47,7 @@ public class WriteCvs {
         } catch (IOException ex) {
             Logger.getLogger(WriteCvs.class.getName()).log(Level.SEVERE, null, ex);
         }
-		
+
     }
 
 }
