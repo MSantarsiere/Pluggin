@@ -30,7 +30,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
  
 public class ListClassesExample {
-
+static int i=0;
     public static void listClasses(String msg) throws ParserConfigurationException, TransformerConfigurationException, TransformerException {
         File projectDir = new File(msg + "\\src\\test\\java");
         int fileCount = projectDir.list().length;
@@ -50,19 +50,25 @@ public class ListClassesExample {
                 System.out.println(path);
 
                 try {
-
+                     
                     new VoidVisitorAdapter<Object>() {
+                        
                         @Override
+                        
                         public void visit(ClassOrInterfaceDeclaration n, Object arg) {
+                            
                             super.visit(n, arg);
 
                             List<String> methodNames = new ArrayList<>();
                             VoidVisitor<List<String>> methodNameCollector = new VoidVisitorComplete.MethodNameCollector();
                             methodNameCollector.visit(n, methodNames);
+                           
                             for (String a : methodNames) {
                                 Element caso = doc.createElement("TestCase");
+                               String valore =Integer.toString(i);
+                                caso.setAttribute("id",valore );
+                               i++;
                                 rootElement.appendChild(caso);
-
                                 //  elements
                                 Element classe = doc.createElement("Class");
                                 //   String nome=getnome();
@@ -76,6 +82,7 @@ public class ListClassesExample {
                             }
                         }
                     }.visit(JavaParser.parse(file), null);
+                    
                     System.out.println(); // empty line
                 } catch (IOException e) {
                     new RuntimeException(e);

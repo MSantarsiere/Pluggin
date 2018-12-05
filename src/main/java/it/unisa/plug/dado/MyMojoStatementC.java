@@ -5,6 +5,7 @@
  */
 package it.unisa.plug.dado;
 
+import it.unisa.prioritization.runner.AS;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -92,12 +93,16 @@ public class MyMojoStatementC extends AbstractMojo {
             NodeList nList = doc.getElementsByTagName("TestCase");
             String mvn = getMvnCommand();
 
+
             for (int temp = 0; temp < nList.getLength(); temp++) {
                 Node nNode = nList.item(temp);
+     
                 System.out.println("\nCurrent Element :" + nNode.getNodeName());
 
                 if (nNode.getNodeType() == Node.ELEMENT_NODE) {
                     Element eElement = (Element) nNode;
+                                   
+
 
                     String classe = eElement.getElementsByTagName("Class").item(0).getTextContent();
 
@@ -122,10 +127,18 @@ public class MyMojoStatementC extends AbstractMojo {
                 }
 
             }
-
+            
+            WriteCvs.createCostMatrix();
+              AS.matrixce();
+              File permutazioni=new File("C:\\Users\\Rembor\\Documents\\NetBeansProjects\\progetto\\Var.txt");
+               
+              WriteCvs.createNewXMl(permutazioni);
+                      
         } catch (ParserConfigurationException | SAXException ex) {
             Logger.getLogger(MyMojo.class.getName()).log(Level.SEVERE, null, ex);
         } catch (TransformerException ex) {
+            Logger.getLogger(MyMojoStatementC.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InterruptedException ex) {
             Logger.getLogger(MyMojoStatementC.class.getName()).log(Level.SEVERE, null, ex);
         }
 
@@ -154,7 +167,7 @@ public class MyMojoStatementC extends AbstractMojo {
 
     private void readJacoco(String msg) {
         try {
-            WriteCvs stampamatrice = new WriteCvs();
+           
             File fXmlFile = new File(msg + "\\target\\site\\jacoco\\jacoco.xml");
 
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();

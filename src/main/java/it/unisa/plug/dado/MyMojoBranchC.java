@@ -211,7 +211,7 @@ public class MyMojoBranchC extends AbstractMojo {
 
             }
 
-            WriteCvs.writeDataAtOnce(stringa);
+//            WriteCvs.writeDataAtOnce(stringa);
 
             fXmlFile.delete();
         } catch (ParserConfigurationException | SAXException | IOException | DOMException | NumberFormatException e) {

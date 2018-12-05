@@ -234,7 +234,7 @@ public class MyMojo extends AbstractMojo {
 
                     }
 
-                    WriteCvs.writeDataAtOnce(stringa);
+                   // WriteCvs.writeDataAtOnce(stringa);
 
                 }
             }
