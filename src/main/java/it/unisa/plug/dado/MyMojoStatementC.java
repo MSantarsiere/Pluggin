@@ -79,7 +79,10 @@ public class MyMojoStatementC extends AbstractMojo {
                 writer.close();
             }
             File file = new File("testSuite.xml");
-            ListClassesExample.listClasses(msg);
+            if(!file.exists()){
+                ListClassesExample.listClasses(msg);
+            }
+            
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
                     .newInstance();
             DocumentBuilder documentBuilder;
@@ -129,8 +132,8 @@ public class MyMojoStatementC extends AbstractMojo {
             }
             
             WriteCvs.createCostMatrix();
-              AS.matrixce();
-              File permutazioni=new File("C:\\Users\\Rembor\\Documents\\NetBeansProjects\\progetto\\Var.txt");
+              AS.matrixce(msg);
+              File permutazioni=new File("Var.txt");
                
               WriteCvs.createNewXMl(permutazioni);
                       

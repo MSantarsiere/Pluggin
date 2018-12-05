@@ -29,65 +29,64 @@ import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;
  * @author Rembor
  */
 public class AS {
-     public static void matrixce() throws InterruptedException, IOException{
-          String outputFolder ="C:\\Users\\Rembor\\Documents\\NetBeansProjects\\progetto";
-     String file ="C:\\Users\\Rembor\\Documents\\NetBeansProjects\\progetto\\matrice.csv";
-     String file1= "C:\\Users\\Rembor\\Documents\\NetBeansProjects\\progetto\\matricecosti.csv";
-     String file2= "C:\\Users\\Rembor\\Documents\\NetBeansProjects\\progetto\\matricefault.csv";
-     CoverageMatrix a= new CoverageMatrix(file,false);
-         CumulativeCoverage b=new CumulativeCoverage(a);
-    System.out.println(     b.getMaxCoverage());
-    ExecutionCostVector c=new ExecutionCostVector(file1);
-     System.out.println(   c.getMaxCost());
-     Algorithm algorithm = null;
-                             List<String> coverageFilenames = new ArrayList<>();
-                             coverageFilenames.add("C:\\Users\\Rembor\\Documents\\NetBeansProjects\\progetto\\matrice.csv");
-    GenericPrioritizationProblem problem =new SingleObjectivePrioritizationProblem(
-                        coverageFilenames,
-                      file1,
-                       file2,
-                        false);
-    
 
-                algorithm = new AdditionalGreedyPrioritization(problem);
-                algorithm.run();
-                PermutationSolution<Integer>asd=(PermutationSolution<Integer>) algorithm.getResult();
-                System.out.print(asd);
-                 long startTime = new Date().getTime();
+    public static void matrixce(String msg) throws InterruptedException, IOException {
+        String outputFolder = msg;
+        String file = msg + "\\matrice.csv";
+        String file1 = msg + "\\matricecosti.csv";
+        String file2 = msg + "\\matricefault.csv";
+        CoverageMatrix a = new CoverageMatrix(file, false);
+        CumulativeCoverage b = new CumulativeCoverage(a);
+        System.out.println(b.getMaxCoverage());
+        ExecutionCostVector c = new ExecutionCostVector(file1);
+        System.out.println(c.getMaxCost());
+        Algorithm algorithm = null;
+        List<String> coverageFilenames = new ArrayList<>();
+        coverageFilenames.add(msg + "\\matrice.csv");
+        GenericPrioritizationProblem problem = new SingleObjectivePrioritizationProblem(
+                coverageFilenames,
+                file1,
+                file2,
+                false);
 
-                Thread algorithmThread = new Thread(algorithm);
-                algorithmThread.start();
+        algorithm = new AdditionalGreedyPrioritization(problem);
+        algorithm.run();
+        PermutationSolution<Integer> asd = (PermutationSolution<Integer>) algorithm.getResult();
+        System.out.print(asd);
+        long startTime = new Date().getTime();
 
-                algorithmThread.join();
+        Thread algorithmThread = new Thread(algorithm);
+        algorithmThread.start();
 
-                List<PermutationSolution<Integer>> population = new ArrayList<>();
+        algorithmThread.join();
 
-                if (algorithm.getResult() instanceof PermutationSolution) {
-                    population.add((PermutationSolution<Integer>) algorithm.getResult());
-                } else if (algorithm.getResult() instanceof List) {
-                    population.addAll((List<PermutationSolution<Integer>>) algorithm.getResult());
-                }
+        List<PermutationSolution<Integer>> population = new ArrayList<>();
 
-                long finishTime = new Date().getTime();
+        if (algorithm.getResult() instanceof PermutationSolution) {
+            population.add((PermutationSolution<Integer>) algorithm.getResult());
+        } else if (algorithm.getResult() instanceof List) {
+            population.addAll((List<PermutationSolution<Integer>>) algorithm.getResult());
+        }
 
-                long computingTime = finishTime - startTime;
+        long finishTime = new Date().getTime();
 
-                JMetalLogger.logger.info("Total execution time: " + computingTime + "ms");
+        long computingTime = finishTime - startTime;
 
-             
+        JMetalLogger.logger.info("Total execution time: " + computingTime + "ms");
 
-                new SolutionListOutput(population)
-                        .setSeparator(",")
-                        .setVarFileOutputContext(new DefaultFileOutputContext(outputFolder + "\\VAR" +".txt"))
-                        .setFunFileOutputContext(new DefaultFileOutputContext(outputFolder + "\\FUN.1.tsv"))
-                        .print();
+        new SolutionListOutput(population)
+                .setSeparator(",")
+                .setVarFileOutputContext(new DefaultFileOutputContext(outputFolder + "\\VAR" + ".txt"))
+                .setFunFileOutputContext(new DefaultFileOutputContext(outputFolder + "\\FUN.1.tsv"))
+                .print();
 
-                printAFDPc(problem, population, outputFolder, 1);
-                printTime(computingTime, outputFolder, 1);
-            }
-  private static void printAFDPc(GenericPrioritizationProblem problem, List<PermutationSolution<Integer>> population,
-                                   String outputFolder, int run) throws IOException {
-        BufferedWriter afdpcBW = new DefaultFileOutputContext(outputFolder + "AFDP." + run).getFileWriter();
+        printAFDPc(problem, population, outputFolder, 1);
+        printTime(computingTime, outputFolder, 1);
+    }
+
+    private static void printAFDPc(GenericPrioritizationProblem problem, List<PermutationSolution<Integer>> population,
+            String outputFolder, int run) throws IOException {
+        BufferedWriter afdpcBW = new DefaultFileOutputContext(outputFolder + "\\AFDP." + run).getFileWriter();
         List<Double> afdpcList = new AFDPc(problem).evaluate(population);
 
         for (double afdpc : afdpcList) {
@@ -97,12 +96,9 @@ public class AS {
     }
 
     private static void printTime(double time, String outputFolder, int run) throws IOException {
-        BufferedWriter timeBW = new DefaultFileOutputContext(outputFolder + "TIME." + run).getFileWriter();
+        BufferedWriter timeBW = new DefaultFileOutputContext(outputFolder + "\\TIME." + run).getFileWriter();
         timeBW.append(String.valueOf(time));
         timeBW.close();
     }
 
-    
-     }
-     
-
+}

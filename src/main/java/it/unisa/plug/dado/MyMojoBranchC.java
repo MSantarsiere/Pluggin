@@ -5,6 +5,7 @@
  */
 package it.unisa.plug.dado;
 
+import it.unisa.prioritization.runner.AS;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -35,7 +36,8 @@ import org.xml.sax.SAXException;
  */
 @Mojo(name = "hello2")
 public class MyMojoBranchC extends AbstractMojo {
-      @Parameter(property = "msg")
+
+    @Parameter(property = "msg")
 
     /**
      * My File.
@@ -77,7 +79,10 @@ public class MyMojoBranchC extends AbstractMojo {
                 writer.close();
             }
             File file = new File("testSuite.xml");
-            ListClassesExample.listClasses(msg);
+            if(!file.exists()){
+                ListClassesExample.listClasses(msg);
+            }
+            
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
                     .newInstance();
             DocumentBuilder documentBuilder;
@@ -91,12 +96,16 @@ public class MyMojoBranchC extends AbstractMojo {
             NodeList nList = doc.getElementsByTagName("TestCase");
             String mvn = getMvnCommand();
 
+
             for (int temp = 0; temp < nList.getLength(); temp++) {
                 Node nNode = nList.item(temp);
+     
                 System.out.println("\nCurrent Element :" + nNode.getNodeName());
 
                 if (nNode.getNodeType() == Node.ELEMENT_NODE) {
                     Element eElement = (Element) nNode;
+                                   
+
 
                     String classe = eElement.getElementsByTagName("Class").item(0).getTextContent();
 
@@ -121,10 +130,18 @@ public class MyMojoBranchC extends AbstractMojo {
                 }
 
             }
-
+            
+            WriteCvs.createCostMatrix();
+              AS.matrixce(msg);
+              File permutazioni=new File("Var.txt");
+               
+              WriteCvs.createNewXMl(permutazioni);
+                      
         } catch (ParserConfigurationException | SAXException ex) {
             Logger.getLogger(MyMojo.class.getName()).log(Level.SEVERE, null, ex);
         } catch (TransformerException ex) {
+            Logger.getLogger(MyMojoStatementC.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InterruptedException ex) {
             Logger.getLogger(MyMojoStatementC.class.getName()).log(Level.SEVERE, null, ex);
         }
 
@@ -153,7 +170,7 @@ public class MyMojoBranchC extends AbstractMojo {
 
     private void readJacoco(String msg) {
         try {
-            WriteCvs stampamatrice = new WriteCvs();
+           
             File fXmlFile = new File(msg + "\\target\\site\\jacoco\\jacoco.xml");
 
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -211,7 +228,7 @@ public class MyMojoBranchC extends AbstractMojo {
 
             }
 
-//            WriteCvs.writeDataAtOnce(stringa);
+            WriteCvs.writeDataAtOnce(stringa);
 
             fXmlFile.delete();
         } catch (ParserConfigurationException | SAXException | IOException | DOMException | NumberFormatException e) {
