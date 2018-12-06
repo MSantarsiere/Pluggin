@@ -5,6 +5,7 @@
  */
 package it.unisa.prioritization.runner;
 
+import it.unisa.plug.dado.WriteCvs;
 import it.unisa.prioritization.algorithm.AdditionalGreedyPrioritization;
 import it.unisa.prioritization.criterion.CoverageMatrix;
 import it.unisa.prioritization.criterion.CumulativeCoverage;
@@ -33,20 +34,26 @@ public class AS {
     public static void matrixce(String msg) throws InterruptedException, IOException {
         String outputFolder = msg;
         String file = msg + "\\matrice.csv";
+        ArrayList<ArrayList<Integer>> ma= WriteCvs.getM();
         String file1 = msg + "\\matricecosti.csv";
         String file2 = msg + "\\matricefault.csv";
         CoverageMatrix a = new CoverageMatrix(file, false);
         CumulativeCoverage b = new CumulativeCoverage(a);
-        System.out.println(b.getMaxCoverage());
+        //System.out.println(b.getMaxCoverage());
         ExecutionCostVector c = new ExecutionCostVector(file1);
-        System.out.println(c.getMaxCost());
+        //System.out.println(c.getMaxCost());
         Algorithm algorithm = null;
         List<String> coverageFilenames = new ArrayList<>();
         coverageFilenames.add(msg + "\\matrice.csv");
+//        GenericPrioritizationProblem problem = new SingleObjectivePrioritizationProblem(
+//                ocverageFilenames,
+//                file1,
+//                file2,
+//                false);
+        
         GenericPrioritizationProblem problem = new SingleObjectivePrioritizationProblem(
-                coverageFilenames,
+                ma,
                 file1,
-                file2,
                 false);
 
         algorithm = new AdditionalGreedyPrioritization(problem);
@@ -68,20 +75,14 @@ public class AS {
             population.addAll((List<PermutationSolution<Integer>>) algorithm.getResult());
         }
 
-        long finishTime = new Date().getTime();
-
-        long computingTime = finishTime - startTime;
-
-        JMetalLogger.logger.info("Total execution time: " + computingTime + "ms");
 
         new SolutionListOutput(population)
                 .setSeparator(",")
                 .setVarFileOutputContext(new DefaultFileOutputContext(outputFolder + "\\VAR" + ".txt"))
-                .setFunFileOutputContext(new DefaultFileOutputContext(outputFolder + "\\FUN.1.tsv"))
                 .print();
 
         printAFDPc(problem, population, outputFolder, 1);
-        printTime(computingTime, outputFolder, 1);
+      
     }
 
     private static void printAFDPc(GenericPrioritizationProblem problem, List<PermutationSolution<Integer>> population,
@@ -95,10 +96,6 @@ public class AS {
         afdpcBW.close();
     }
 
-    private static void printTime(double time, String outputFolder, int run) throws IOException {
-        BufferedWriter timeBW = new DefaultFileOutputContext(outputFolder + "\\TIME." + run).getFileWriter();
-        timeBW.append(String.valueOf(time));
-        timeBW.close();
-    }
+   
 
 }

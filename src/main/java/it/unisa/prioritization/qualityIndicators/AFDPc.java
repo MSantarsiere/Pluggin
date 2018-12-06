@@ -30,9 +30,7 @@ public class AFDPc extends SimpleDescribedEntity implements QualityIndicator<Lis
 
         List<Double> afdpcList = new ArrayList<>();
 
-        for (PermutationSolution<Integer> solution : solutions){
-            afdpcList.add(GenericAveragePercentage.calculate(solution, problem.faultMatrix, problem.costCriterion, false));
-        }
+       
 
         return  afdpcList;
     }

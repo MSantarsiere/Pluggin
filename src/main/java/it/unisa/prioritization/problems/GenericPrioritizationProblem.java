@@ -17,8 +17,8 @@ public abstract class GenericPrioritizationProblem extends AbstractIntegerPermut
 
     public final List<CoverageMatrix> coverageCriteria = new ArrayList<>();
     public final ExecutionCostVector costCriterion;
-    public final CoverageMatrix faultMatrix;
-
+   
+ public  ArrayList<ArrayList<Integer>> ma=new ArrayList<>();
     /**
      * Public constructor
      *
@@ -27,7 +27,7 @@ public abstract class GenericPrioritizationProblem extends AbstractIntegerPermut
      * @param costFilename      file containing the execution cost info
      * @param faultFilename     file containing the fault coverage matrix
      */
-    GenericPrioritizationProblem(List<String> coverageFilenames, String costFilename, String faultFilename, boolean compacted) {
+    GenericPrioritizationProblem(List<String> coverageFilenames, String costFilename,  boolean compacted) {
 
         // load all coverage matrices
         for (String filename : coverageFilenames) {
@@ -42,9 +42,23 @@ public abstract class GenericPrioritizationProblem extends AbstractIntegerPermut
         System.out.println("Read " + costCriterion.size() + " elements from the cost array.");
 
         // past fault matrix must not be compacted beacuse it is used for computing APFDc
-        faultMatrix = new CoverageMatrix(faultFilename, false);
-        System.out.println("Read " + faultMatrix.getSize() + " elements from the coverage matrix '" + faultFilename + "'");
+        
+        setNumberOfVariables(costCriterion.size());
+        setNumberOfConstraints(0);
+    }
+    
+    GenericPrioritizationProblem(ArrayList<ArrayList<Integer>> ma, String costFilename, boolean compacted) {
 
+        // load all coverage matrices
+       this.ma =ma;
+         CoverageMatrix cov;
+            cov = new CoverageMatrix(ma, compacted);
+            this.coverageCriteria.add(cov);
+        // load cost info
+        costCriterion = new ExecutionCostVector(costFilename);
+        System.out.println("Read " + costCriterion.size() + " elements from the cost array.");
+
+     
         setNumberOfVariables(costCriterion.size());
         setNumberOfConstraints(0);
     }

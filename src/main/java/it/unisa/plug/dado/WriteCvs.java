@@ -9,6 +9,7 @@ package it.unisa.plug.dado;
  *
  * @author Rembor
  */
+import it.unisa.prioritization.runner.AS;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.DataInputStream;
@@ -51,11 +52,12 @@ public class WriteCvs {
     // stampa il csv nella base directory del progetto
     static private File file = new File("matrice.csv");
     static private File file1 = new File("matricecosti.csv");
+   static ArrayList<ArrayList<Integer>> matrice = new ArrayList<ArrayList<Integer>>();
 
     public static void writeDataAtOnce(ArrayList<Integer> linea) {
-
+  matrice.add(linea);
         try {
-
+         
             FileWriter fw = new FileWriter(file, true);
             BufferedWriter bw = new BufferedWriter(fw);
             PrintWriter out = new PrintWriter(bw);
@@ -63,7 +65,7 @@ public class WriteCvs {
             for (int i = 0; i < linea.size(); i++) {
                 System.out.print(linea.get(i) + "  ");
                 int indice = linea.get(i);
-
+               
                 out.print(indice + " ");
             }
             out.println();
@@ -168,7 +170,7 @@ public class WriteCvs {
 
         document.getDocumentElement().normalize();
 
-        System.out.println("Root element name :- " + document.getDocumentElement().getNodeName());
+      //  System.out.println("Root element name :- " + document.getDocumentElement().getNodeName());
 
         NodeList nodeList = document.getElementsByTagName("TestCase");
 
@@ -177,16 +179,16 @@ public class WriteCvs {
 
                 Node node = nodeList.item(i);
 
-                System.out.println("\nCurrent element name :- " + node.getNodeName());
-                System.out.println("-------------------------------------");
+        //        System.out.println("\nCurrent element name :- " + node.getNodeName());
+          //      System.out.println("-------------------------------------");
 
                 if (node.getNodeType() == Node.ELEMENT_NODE) {
 
                     Element element = (Element) node;
                     if (element.getAttribute("id").equals(array[indice])) {
-                        System.out.println("Employee id :- " + element.getAttribute("id"));
-                        System.out.println("Employee Name : " + element.getElementsByTagName("Class").item(0).getTextContent());
-                        System.out.println("Email: " + element.getElementsByTagName("method").item(0).getTextContent());
+            //            System.out.println("Employee id :- " + element.getAttribute("id"));
+              //          System.out.println("Employee Name : " + element.getElementsByTagName("Class").item(0).getTextContent());
+                //        System.out.println("Email: " + element.getElementsByTagName("method").item(0).getTextContent());
                         Element employee = document1.createElement("TestCase");
 
                         root.appendChild(employee);
@@ -224,5 +226,12 @@ public class WriteCvs {
         System.out.println("Done creating XML File");
 
     }
-
+    static public void stampaM(){
+        for(int i=0;i<matrice.size();i++){
+            System.out.println(matrice.get(i));
+        }
+    }
+    static public ArrayList<ArrayList<Integer>> getM(){
+        return matrice;
+    }
 }

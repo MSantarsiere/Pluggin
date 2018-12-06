@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,6 +32,14 @@ public class CoverageMatrix {
                     "Problem when creating the coverage matrix for the file "
                             + coverageFilename, e);
         }
+    }
+
+    public CoverageMatrix(ArrayList<ArrayList<Integer>> ma, boolean compacted) {
+      
+        matrix=readMatrice(ma);
+      maxCoverage_= computeMaxCoverage();
+        
+        
     }
 
     /**
@@ -133,6 +142,25 @@ public class CoverageMatrix {
 
     public int getElement(int testIndex, int targetIndex) {
         return this.matrix[testIndex][targetIndex];
+    }
+
+
+    private int[][] readMatrice(ArrayList<ArrayList<Integer>> ma) {
+       int[][] a =new int[ma.get(1).size()][ma.get(1).size()] ;
+      
+       ArrayList<Integer> l=new ArrayList<>();
+        for(int i=0;i<ma.size();i++){
+           for(int j=0;j<ma.get(i).size();j++) {
+               l=ma.get(i);
+              a[i][j]=l.get(j); 
+               
+           }
+            
+        }
+        
+        
+        return a;
+  
     }
 
 }

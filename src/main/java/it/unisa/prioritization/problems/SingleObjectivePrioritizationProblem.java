@@ -15,11 +15,17 @@ import java.util.List;
  */
 public class SingleObjectivePrioritizationProblem extends GenericPrioritizationProblem {
 
-    public SingleObjectivePrioritizationProblem(List<String> coverageFilenames, String costFilename, String faultFilename, boolean compacted) {
-        super(coverageFilenames, costFilename, faultFilename, compacted);
+    public SingleObjectivePrioritizationProblem(List<String> coverageFilenames, String costFilename, boolean compacted) {
+        super(coverageFilenames, costFilename, compacted);
         setNumberOfObjectives(1);
     }
 
+    public SingleObjectivePrioritizationProblem(ArrayList<ArrayList<Integer>> ma, String file1, boolean b) {
+        super(ma, file1,  b);
+        setNumberOfObjectives(1);
+    }
+
+   
     /**
      * Evaluates a solution
      *
